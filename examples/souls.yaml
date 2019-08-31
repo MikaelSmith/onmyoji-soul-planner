@@ -1,0 +1,381 @@
+slot1:
+  - type: Namazu
+    atk: 512
+    atkbonus: 3
+    crit: 11
+  - type: Seductress
+    atk: 509
+    crit: 3
+    spd: 3
+  - type: Seductress
+    atk: 486
+    crit: 2
+    spd: 3
+  - type: Seductress
+    atk: 486
+    atkbonus: 3
+    crit: 3
+  - type: Seductress
+    atk: 486
+    crit: 3
+    critdmg: 7
+  - type: Seductress
+    atk: 486
+    atkbonus: 5
+    crit: 5
+  - type: Odokuro
+    atk: 486
+    crit: 11
+  - type: Namazu
+    atk: 486
+    crit: 8
+    spd: 5
+  - type: Namazu
+    atk: 512
+    atkbonus: 3
+    crit: 11
+  - type: Namazu
+    atk: 486
+    crit: 3
+    critdmg: 3
+  - type: Seductress
+    atk: 486
+    atkbonus: 3
+    crit: 8
+  - type: Shadow
+    atk: 486
+    crit: 6
+    critdmg: 3
+    spd: 5
+  - type: Shadow
+    atk: 486
+    crit: 6
+    spd: 12
+  - type: Samisen
+    atk: 486
+    crit: 9
+    spd: 3
+  - type: Nightwing
+    atk: 580
+    crit: 3
+    spd: 2
+  - type: Scarlet
+    atk: 559
+    critdmg: 7
+  - type: Scarlet
+    atk: 486
+    crit: 5
+  - type: Scarlet
+    atk: 486
+    critdmg: 3
+    spd: 8
+  - type: Watcher
+    atk: 486
+    atkbonus: 5
+    crit: 3
+  - type: Watcher
+    atk: 486
+    atkbonus: 5
+    crit: 10
+  - type: Shadow
+    atk: 486
+    crit: 5
+    critdmg: 3
+  - type: Shadow
+    atk: 609
+    atkbonus: 6
+    crit: 3
+  - type: Kyoukotsu
+    atk: 486
+    critdmg: 7
+    spd: 5
+  - type: Shadow
+    atk: 304
+    atkbonus: 2
+    crit: 6
+    critdmg: 5
+  - type: Shadow
+    atk: 509
+    crit: 16
+
+slot2:
+  - type: Seductress
+    atk: 25
+    atkbonus: 55
+    crit: 5
+  - type: Seductress
+    atkbonus: 58
+    spd: 8
+  - type: Seductress
+    atkbonus: 55
+    crit: 5
+  - type: Seductress
+    atkbonus: 60
+    crit: 3
+  - type: Seductress
+    atkbonus: 58
+    crit: 3
+  - type: Seductress
+    atk: 23
+    atkbonus: 55
+    critdmg: 7
+  - type: Shadow
+    atkbonus: 60
+    crit: 3
+  - type: Shadow
+    atk: 101
+    atkbonus: 61
+    critdmg: 3
+  - type: Shadow
+    atk: 26
+    atkbonus: 55
+    critdmg: 10
+  - type: Scarlet
+    atkbonus: 55
+    critdmg: 11
+  - type: Scarlet
+    atkbonus: 55
+    crit: 9
+    critdmg: 3
+  - type: Scarlet
+    atkbonus: 57
+    spd: 3
+  - type: Watcher
+    atkbonus: 63
+    crit: 3
+  - type: Kyoukotsu
+    atkbonus: 55
+    critdmg: 19
+  - type: Watcher
+    atkbonus: 36
+    crit: 2
+    critdmg: 5
+  - type: Shadow
+    crit: .03
+    spd: 57
+  - type: Nightwing
+    atk: 51
+    crit: .11
+    spd: 57
+
+slot3:
+  - type: Seductress
+    crit: 16
+    spd: 3
+  - type: Seductress
+    atkbonus: 5
+    crit: 6
+  - type: Seductress
+    atk: 24
+    critdmg: 4
+  - type: Seductress
+    atk: 25
+    crit: 6
+    critdmg: 11
+  - type: Seductress
+    atk: 46
+    crit: 5
+  - type: Seductress
+    atk: 23
+    atkbonus: 5
+    spd: 13
+  - type: Shadow
+    atk: 24
+    crit: 3
+    critdmg: 4
+  - type: Shadow
+    atk: 47
+    crit: 5
+    spd: 8
+  - type: Shadow
+    atk: 44
+    critdmg: 10
+  - type: Shadow
+    crit: 3
+    critdmg: 4
+  - type: Shadow
+    atk: 49
+    crit: 5
+  - type: Shadow
+    atkbonus: 5
+    crit: 6
+  - type: Scarlet
+    atkbonus: 3
+    crit: 5
+  - type: Samisen
+    atk: 78
+    critdmg: 7
+    spd: 3
+  - type: Scarlet
+    critdmg: 3
+    spd: 11
+  - type: Scarlet
+    atkbonus: 5
+    crit: 5
+  - type: Watcher
+    atkbonus: 5
+    crit: 3
+  - type: Watcher
+    atk: 25
+    atkbonus: 6
+  - type: Kyoukotsu
+    atk: 49
+    crit: 8
+  - type: Tsuchigumo
+    crit: 6
+    critdmg: 15
+  - type: Tsuchigumo
+    spd: 3
+
+slot4:
+  - type: Seductress
+    atkbonus: 63
+    crit: 8
+    critdmg: 3
+    spd: 3
+  - type: Seductress
+    atk: 26
+    atkbonus: 66
+  - type: Seductress
+    atkbonus: 60
+  - type: Seductress
+    atkbonus: 55
+    spd: 8
+  - type: Shadow
+    atkbonus: 61
+    crit: 8
+    spd: 5
+  - type: Shadow
+    atkbonus: 55
+    critdmg: 18
+    spd: 3
+  - type: Shadow
+    atkbonus: 55
+    critdmg: 7
+    spd: 8
+  - type: Shadow
+    atkbonus: 55
+    crit: 3
+  - type: Nightwing
+    atkbonus: 58
+  - type: Watcher
+    atkbonus: 55
+    crit: 6
+  - type: Kyoukotsu
+    atk: 22
+    atkbonus: 55
+    critdmg: 11
+    spd: 2
+  - type: Tsuchigumo
+    atkbonus: 8
+    crit: 3
+    spd: 2
+  - type: Scarlet
+    atkbonus: 36
+    crit: 4
+    critdmg: 5
+
+slot5:
+  - type: Seductress
+    atk: 71
+    atkbonus: 3
+    crit: 6
+  - type: Seductress
+    atk: 23
+    critdmg: 4
+    spd: 8
+  - type: Seductress
+    crit: 3
+    critdmg: 7
+  - type: Seductress
+    atk: 76
+    spd: 3
+  - type: Seductress
+    atk: 23
+    crit: 5
+    critdmg: 3
+  - type: Seductress
+    crit: 3
+    critdmg: 11
+  - type: Odokuro
+    atkbonus: 8
+    crit: 8
+    critdmg: 11
+  - type: Odokuro
+    atkbonus: 14
+    critdmg: 11
+    spd: 9
+  - type: Seductress
+    crit: 3
+    critdmg: 11
+    spd: 3
+  - type: Seductress
+    crit: 3
+    critdmg: 4
+    spd: 10
+  - type: Shadow
+    crit: 6
+    critdmg: 3
+  - type: Scarlet
+    atkbonus: 8
+    spd: 8
+  - type: Seductress
+    atk: 98
+    crit: 3
+  - type: Scarlet
+    atk: 52
+    atkbonus: 3
+  - type: Scarlet
+    atk: 74
+  - type: Watcher
+    atk: 73
+    crit: 3
+    critdmg: 11
+  - type: Watcher
+    atkbonus: 8
+    critdmg: 4
+
+slot6:
+  - type: Namazu
+    crit: 14
+    critdmg: 89
+  - type: Seductress
+    atkbonus: 61
+    crit: 11
+    critdmg: 4
+  - type: Seductress
+    crit: 5
+    critdmg: 55
+    spd: 3
+  - type: Seductress
+    crit: 63
+  - type: Odokuro
+    atkbonus: 9
+    crit: 55
+    critdmg: 3
+  - type: Seductress
+    crit: 55
+    spd: 6
+  - type: Shadow
+    atk: 24
+    critdmg: 89
+  - type: Nightwing
+    crit: 55
+    critdmg: 3
+  - type: Samisen
+    crit: 55
+  - type: Nightwing
+    atkbonus: 11
+    crit: 55
+    critdmg: 8
+    spd: 2
+  - type: Tsuchigumo
+    crit: 2
+    critdmg: 89
+  - type: Seductress
+    crit: 36
+    spd: 2
+  - type: Seductress
+    atkbonus: 3
+    crit: 6
+    critdmg: 89

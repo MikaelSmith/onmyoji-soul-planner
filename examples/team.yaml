@@ -1,0 +1,36 @@
+- name: Ibaraki Doji
+  primary: Shadow
+  constraints:
+    spd:
+      low: 125
+      high: 128
+    crit:
+      low: 99
+      high: 100
+- name: Onikiri
+  primary: Seductress
+  constraints:
+    spd:
+      low: 116
+      high: 127
+    crit:
+      low: 90
+      high: 100
+- name: Kamikui
+  primary: Shadow
+  constraints:
+    spd:
+      low: 163
+      high: 220
+    crit:
+      low: 99
+      high: 100
+- name: Ubume
+  primary: Seductress
+  constraints:
+    spd:
+      low: 116
+      high: 125
+    crit:
+      low: 90
+      high: 100
