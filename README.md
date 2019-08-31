@@ -12,7 +12,7 @@ The souls database has 6 keys - `slot1-6` - that map to arrays of souls. Each so
 
 You can select a set of souls for a single Shikigami with
 ```
-onmyoji-soul-planner [-soulsdb <db>] <shikigami> <main soul> [spd=<constraint>] [crit=<constraint>]
+onmyoji-soul-planner [options] <shikigami> <main soul> [spd=<constraint>] [crit=<constraint>]
 ```
 Constraints are an exact integer number or a range, such as `95-100`. For example
 ```
@@ -28,9 +28,14 @@ would be a good selection for the Ibaraki Doji + Kamikui Souls 10 team.
 
 You can also supply a file describing a whole team to optimize
 ```
-onmyoji-soul-planner [-soulsdb <db>] <team.yaml>
+onmyoji-soul-planner [options] <team.yaml>
 ```
 You can try this out with [examples/team.yaml](examples/team.yaml) using
 ```
 onmyoji-soul-planner -soulsdb examples/souls.yaml examples/team.yaml
 ```
+
+## Options
+
+* *-ignore-crit*: Ignore crit when calculating damage, useful for fights that negate crit
+* *-soulsdb string*: A YAML file describing your souls (default "souls.yaml")

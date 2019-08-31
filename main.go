@@ -46,6 +46,7 @@ type member struct {
 }
 
 var soulsSource = flag.String("soulsdb", "souls.yaml", "A YAML file describing your souls")
+var ignoreCrit = flag.Bool("ignore-crit", false, "Ignore crit when calculating damage, useful for fights that negate crit")
 
 func main() {
 	log.SetPrefix("")
@@ -54,8 +55,8 @@ func main() {
 
 	args := flag.Args()
 	if len(args) == 0 {
-		fmt.Println(`Usage: onmyoji-soul-planner <team.yaml> OR
-       onmyoji-soul-planner <shikigami> <main soul> [<attr>=<constraint>]`)
+		fmt.Println(`Usage: onmyoji-soul-planner [options] <team.yaml> OR
+       onmyoji-soul-planner [options] <shikigami> <main soul> [<attr>=<constraint>]`)
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
@@ -172,6 +173,11 @@ func soulCounts(soulSet []onmyoji.Soul) map[string]int {
 }
 
 func computeCrit(shiki member, soulSet []onmyoji.Soul, types map[string]int) int {
+	if *ignoreCrit {
+		// Assume crit is worthless
+		return 0
+	}
+
 	crit := shiki.Crit
 	for _, sl := range soulSet {
 		crit += sl.Crit
