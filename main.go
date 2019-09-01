@@ -13,9 +13,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Set to true to enable debugging output.
-const debug = false
-
 type constraint struct {
 	Low, High int
 }
@@ -93,18 +90,14 @@ func main() {
 	}
 
 	for i, place := range team {
-		shiki, ok := onmyoji.Shikigamis[strings.ToLower(place.Name)]
-		if !ok {
-			log.Fatalf("Unknown shikigami %v", place.Name)
+		shiki, err := onmyoji.GetShikigami(place.Name)
+		if err != nil {
+			log.Fatalf("Error: %v", err)
 		}
 		place.Shikigami = shiki
 
-		// Primary needs to be lower-case when used later. We preserve case until now
-		// for clearer error messages.
-		rawPrimary := place.Primary
-		place.Primary = strings.ToLower(place.Primary)
-		if _, ok := onmyoji.SoulTypes[place.Primary]; !ok {
-			log.Fatalf("Unknown main soul type %v", rawPrimary)
+		if _, err = onmyoji.SoulSetBonus(place.Primary); err != nil {
+			log.Fatalf("Error with primary soul: %v", err)
 		}
 
 		// Update the team member.
@@ -125,170 +118,51 @@ func main() {
 	for _, place := range team {
 		fmt.Printf("Finding best souls for %v\n", place.Name)
 		souls := bestSouls(place, soulsDb)
-		out, err := yaml.Marshal(souls)
-		if err != nil {
-			panic(fmt.Sprintf("Unable to marshal souls %v to yaml: %v", souls, err))
-		}
-		os.Stderr.Write(out)
+		fmt.Println(souls)
 
-		if len(souls) == 0 {
+		if souls.Empty() {
 			log.Fatal("Unable to find souls that include 4 of the primary soul and satisfy constraints")
 			break
 		}
 
-		soulsDb.Slot1 = removeFirst(soulsDb.Slot1, souls[0])
-		soulsDb.Slot2 = removeFirst(soulsDb.Slot2, souls[1])
-		soulsDb.Slot3 = removeFirst(soulsDb.Slot3, souls[2])
-		soulsDb.Slot4 = removeFirst(soulsDb.Slot4, souls[3])
-		soulsDb.Slot5 = removeFirst(soulsDb.Slot5, souls[4])
-		soulsDb.Slot6 = removeFirst(soulsDb.Slot6, souls[5])
+		soulsDb.Remove(souls)
 	}
 }
 
-func removeFirst(s []onmyoji.Soul, x onmyoji.Soul) []onmyoji.Soul {
-	i := find(s, x)
-	return remove(s, i)
-}
-
-func remove(s []onmyoji.Soul, i int) []onmyoji.Soul {
-	s[len(s)-1], s[i] = s[i], s[len(s)-1]
-	return s[:len(s)-1]
-}
-
-func find(a []onmyoji.Soul, x onmyoji.Soul) int {
-	for i, n := range a {
-		if x == n {
-			return i
-		}
-	}
-	return len(a)
-}
-
-func soulCounts(soulSet []onmyoji.Soul) map[string]int {
-	counts := make(map[string]int)
-	for _, sl := range soulSet {
-		counts[strings.ToLower(sl.Type)]++
-	}
-	return counts
-}
-
-func computeCrit(shiki member, soulSet []onmyoji.Soul, types map[string]int) int {
-	if *ignoreCrit {
-		// Assume crit is worthless
-		return 0
-	}
-
-	crit := shiki.Crit
-	for _, sl := range soulSet {
-		crit += sl.Crit
-	}
-
-	critSouls := 0
-	for name, attr := range onmyoji.SoulTypes {
-		if attr == "crit" && types[name] >= 2 {
-			critSouls++
-		}
-	}
-	crit += 15 * critSouls
-	if crit > 100 {
-		crit = 100
-	}
-	return crit
-}
-
-func damage(shiki member, soulSet []onmyoji.Soul, types map[string]int) float64 {
-	if types[shiki.Primary] < 4 {
-		return 0.0
-	}
-
-	// soul and shikigami numbers are stored as ints to simplify input. Convert to percentages here.
-	atkbonus := 1.0
-	for _, sl := range soulSet {
-		atkbonus += float64(sl.AtkBonus) / 100.0
-	}
-
-	atkSouls := 0
-	for name, attr := range onmyoji.SoulTypes {
-		if attr == "atkbonus" && types[name] >= 2 {
-			atkSouls++
-		}
-	}
-	atkbonus += 0.15 * float64(atkSouls)
-
-	atk := float64(shiki.Atk) * atkbonus
-	for _, sl := range soulSet {
-		atk += float64(sl.Atk)
-	}
-	if debug {
-		log.Printf("Attack = %v", atk)
-	}
-
-	crit := float64(computeCrit(shiki, soulSet, types)) / 100.0
-	if debug {
-		log.Printf("Crit = %v", crit)
-	}
-
-	critDmg := float64(shiki.CritDmg) / 100.0
-	for _, sl := range soulSet {
-		critDmg += float64(sl.CritDmg) / 100.0
-	}
-	if debug {
-		log.Printf("CritDmg = %v", critDmg)
-	}
-
-	dmg := atk * (crit*critDmg + (1.0 - crit))
-	if types["odokuro"] >= 2 {
-		dmg *= 1.1
-	}
-	if types["seductress"] >= 4 {
-		dmg += 1.2 * crit * atk
-	}
-	return dmg
-}
-
-func bestSouls(m member, soulsDb onmyoji.SoulDb) []onmyoji.Soul {
+func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 	var bestDmg float64
 	var finalCrit, finalSpeed int
-	var bestSouls []onmyoji.Soul
+	var bestSouls onmyoji.SoulSet
 
-	for _, sl1 := range soulsDb.Slot1 {
-		for _, sl2 := range soulsDb.Slot2 {
-			for _, sl3 := range soulsDb.Slot3 {
-				for _, sl4 := range soulsDb.Slot4 {
-					for _, sl5 := range soulsDb.Slot5 {
-						for _, sl6 := range soulsDb.Slot6 {
-							souls := []onmyoji.Soul{sl1, sl2, sl3, sl4, sl5, sl6}
-
-							spd := m.Spd
-							for _, sl := range souls {
-								spd += sl.Spd
-							}
-							if cons, ok := m.Constraints["spd"]; ok {
-								if spd < cons.Low || spd > cons.High {
-									continue
-								}
-							}
-
-							types := soulCounts(souls)
-							crit := computeCrit(m, souls, types)
-							if cons, ok := m.Constraints["crit"]; ok {
-								if crit < cons.Low || crit > cons.High {
-									continue
-								}
-							}
-
-							if dmg := damage(m, souls, types); dmg > bestDmg {
-								bestDmg = dmg
-								bestSouls = souls
-								finalSpeed = spd
-								finalCrit = crit
-							}
-						}
-					}
-				}
+	soulsDb.EachSet(func(souls onmyoji.SoulSet) {
+		spd := m.Spd
+		for _, sl := range souls.Souls() {
+			spd += sl.Spd
+		}
+		if cons, ok := m.Constraints["spd"]; ok {
+			if spd < cons.Low || spd > cons.High {
+				return
 			}
 		}
-	}
+
+		crit := souls.ComputeCrit(m.Shikigami)
+		if cons, ok := m.Constraints["crit"]; ok {
+			if crit < cons.Low || crit > cons.High {
+				return
+			}
+		}
+
+		if souls.Count(m.Primary) < 4 {
+			return
+		}
+
+		if dmg := souls.Damage(m.Shikigami, *ignoreCrit); dmg > bestDmg {
+			bestDmg = dmg
+			bestSouls = souls
+			finalSpeed = spd
+			finalCrit = crit
+		}
+	})
 
 	log.Printf("dmg = %v, speed = %v, crit = %v", bestDmg, finalSpeed, finalCrit)
 	return bestSouls
