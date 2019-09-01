@@ -42,6 +42,12 @@ var shikigamis = map[string]Shikigami{
 		CritDmg: 150,
 		Spd:     113,
 	},
+	"tamamonomae": Shikigami{
+		Atk:     3350,
+		Crit:    12,
+		CritDmg: 160,
+		Spd:     110,
+	},
 }
 
 var nicknames = map[string]string{
@@ -49,6 +55,7 @@ var nicknames = map[string]string{
 	"iba":     "ibaraki doji",
 	"shuten":  "shuten doji",
 	"oni":     "onikiri",
+	"tamamo":  "tamamonomae",
 }
 
 // GetShikigami returns attributes for the named shikigami.

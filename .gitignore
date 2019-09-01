@@ -12,5 +12,6 @@ onmyoji-soul-planner
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Provide your own souls DB
+# Provide your own souls DB and team
 souls.yaml
+team.yaml
