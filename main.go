@@ -44,6 +44,7 @@ type member struct {
 
 var soulsSource = flag.String("soulsdb", "souls.yaml", "A YAML file describing your souls")
 var ignoreCrit = flag.Bool("ignore-crit", false, "Ignore crit when calculating damage, useful for fights that negate crit")
+var ignoreSeduc = flag.Bool("ignore-seductress", false, "Ignore the seductress set effect when calculating damage")
 
 func main() {
 	log.SetPrefix("")
@@ -96,8 +97,10 @@ func main() {
 		}
 		place.Shikigami = shiki
 
-		if _, err = onmyoji.SoulSetBonus(place.Primary); err != nil {
-			log.Fatalf("Error with primary soul: %v", err)
+		if place.Primary != "" {
+			if _, err = onmyoji.SoulSetBonus(place.Primary); err != nil {
+				log.Fatalf("Error with primary soul: %v", err)
+			}
 		}
 
 		// Update the team member.
@@ -152,11 +155,12 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 			}
 		}
 
-		if souls.Count(m.Primary) < 4 {
+		if m.Primary != "" && souls.Count(m.Primary) < 4 {
 			return
 		}
 
-		if dmg := souls.Damage(m.Shikigami, *ignoreCrit); dmg > bestDmg {
+		opts := onmyoji.DamageOptions{IgnoreCrit: *ignoreCrit, IgnoreSeductress: *ignoreSeduc}
+		if dmg := souls.Damage(m.Shikigami, opts); dmg > bestDmg {
 			bestDmg = dmg
 			bestSouls = souls
 			finalSpeed = spd
