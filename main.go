@@ -137,7 +137,7 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 	var finalCrit, finalSpeed int
 	var bestSouls onmyoji.SoulSet
 
-	soulsDb.EachSet(func(souls onmyoji.SoulSet) {
+	soulsDb.EachSet(m.Primary, func(souls onmyoji.SoulSet) {
 		spd := m.Spd
 		for _, sl := range souls.Souls() {
 			spd += sl.Spd
@@ -153,10 +153,6 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 			if crit < cons.Low || crit > cons.High {
 				return
 			}
-		}
-
-		if m.Primary != "" && souls.Count(m.Primary) < 4 {
-			return
 		}
 
 		opts := onmyoji.DamageOptions{IgnoreCrit: *ignoreCrit, IgnoreSeductress: *ignoreSeduc}

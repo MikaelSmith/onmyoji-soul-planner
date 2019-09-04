@@ -67,14 +67,22 @@ type SoulDb struct {
 }
 
 // EachSet constructs a SoulSet for each combination of souls in the database and calls fn on them.
-func (db *SoulDb) EachSet(fn func(SoulSet)) {
+// Only uses sets that include at least 4 of the primary soul (if primary is not an empty string).
+func (db *SoulDb) EachSet(primary string, fn func(SoulSet)) {
 	for _, sl1 := range db.Slot1 {
 		for _, sl2 := range db.Slot2 {
 			for _, sl3 := range db.Slot3 {
+				if primary != "" && sl1.Type != primary && sl2.Type != primary && sl3.Type != primary {
+					continue
+				}
+
 				for _, sl4 := range db.Slot4 {
 					for _, sl5 := range db.Slot5 {
 						for _, sl6 := range db.Slot6 {
-							fn(NewSoulSet([6]Soul{sl1, sl2, sl3, sl4, sl5, sl6}))
+							souls := NewSoulSet([6]Soul{sl1, sl2, sl3, sl4, sl5, sl6})
+							if primary == "" || souls.Count(primary) >= 4 {
+								fn(souls)
+							}
 						}
 					}
 				}
