@@ -66,66 +66,93 @@ type SoulDb struct {
 	Slot1, Slot2, Slot3, Slot4, Slot5, Slot6 []Soul
 }
 
-// EachSet constructs a SoulSet for each combination of souls in the database and calls fn on them.
-// Only uses sets that include at least 4 of the primary soul (if primary is not an empty string).
-func (db *SoulDb) EachSet(primary string, fn func(SoulSet)) {
+// Result contains the outcome of applying a soulset to a shikigami.
+type Result struct {
+	Damage    float64
+	Crit, Spd int
+	Souls     SoulSet
+}
+
+// BestSet constructs a SoulSet for each combination of souls in the database. It calls the fitness
+// function on each set that includes at least 4 of the primary soul (if primary is not an empty
+// string). It returns the best set.
+func (db *SoulDb) BestSet(primary string, fn func(SoulSet) Result) Result {
+	candidates := make(chan Result)
+
 	for _, sl1 := range db.Slot1 {
 		var matches1 int
 		if sl1.Type == primary {
 			matches1++
 		}
 
-		for _, sl2 := range db.Slot2 {
-			matches2 := matches1
-			if sl2.Type == primary {
-				matches2++
-			}
-
-			for _, sl3 := range db.Slot3 {
-				matches3 := matches2
-				if sl3.Type == primary {
-					matches3++
-				}
-				// Starting once we have 3 souls, test that we have sufficient copies of the primary soul
-				// type to complete a set of 4. If not, skip this set of combinations.
-				if primary != "" && matches3 == 0 {
-					continue
+		go func(sl1 Soul) {
+			var best Result
+			for _, sl2 := range db.Slot2 {
+				matches2 := matches1
+				if sl2.Type == primary {
+					matches2++
 				}
 
-				for _, sl4 := range db.Slot4 {
-					matches4 := matches3
-					if sl4.Type == primary {
-						matches4++
+				for _, sl3 := range db.Slot3 {
+					matches3 := matches2
+					if sl3.Type == primary {
+						matches3++
 					}
-					if primary != "" && matches4 <= 1 {
+					// Starting once we have 3 souls, test that we have sufficient copies of the primary soul
+					// type to complete a set of 4. If not, skip this set of combinations.
+					if primary != "" && matches3 == 0 {
 						continue
 					}
 
-					for _, sl5 := range db.Slot5 {
-						matches5 := matches4
-						if sl5.Type == primary {
-							matches5++
+					for _, sl4 := range db.Slot4 {
+						matches4 := matches3
+						if sl4.Type == primary {
+							matches4++
 						}
-						if primary != "" && matches5 <= 2 {
+						if primary != "" && matches4 <= 1 {
 							continue
 						}
 
-						for _, sl6 := range db.Slot6 {
-							matches6 := matches5
-							if sl6.Type == primary {
-								matches6++
+						for _, sl5 := range db.Slot5 {
+							matches5 := matches4
+							if sl5.Type == primary {
+								matches5++
 							}
-							if primary != "" && matches6 <= 3 {
+							if primary != "" && matches5 <= 2 {
 								continue
 							}
 
-							fn(NewSoulSet([6]Soul{sl1, sl2, sl3, sl4, sl5, sl6}))
+							for _, sl6 := range db.Slot6 {
+								matches6 := matches5
+								if sl6.Type == primary {
+									matches6++
+								}
+								if primary != "" && matches6 <= 3 {
+									continue
+								}
+
+								r := fn(NewSoulSet([6]Soul{sl1, sl2, sl3, sl4, sl5, sl6}))
+								if r.Damage > best.Damage {
+									best = r
+								}
+							}
 						}
 					}
 				}
 			}
+			candidates <- best
+		}(sl1)
+	}
+
+	var best Result
+	for i := 0; i < len(db.Slot1); i++ {
+		r := <-candidates
+		if r.Damage > best.Damage {
+			best = r
 		}
 	}
+	close(candidates)
+	return best
 }
 
 // Remove all souls in the SoulSet from the database.

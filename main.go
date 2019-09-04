@@ -133,37 +133,29 @@ func main() {
 }
 
 func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
-	var bestDmg float64
-	var finalCrit, finalSpeed int
-	var bestSouls onmyoji.SoulSet
-
-	soulsDb.EachSet(m.Primary, func(souls onmyoji.SoulSet) {
+	best := soulsDb.BestSet(m.Primary, func(souls onmyoji.SoulSet) onmyoji.Result {
 		spd := m.Spd
 		for _, sl := range souls.Souls() {
 			spd += sl.Spd
 		}
 		if cons, ok := m.Constraints["spd"]; ok {
 			if spd < cons.Low || spd > cons.High {
-				return
+				return onmyoji.Result{}
 			}
 		}
 
 		crit := souls.ComputeCrit(m.Shikigami)
 		if cons, ok := m.Constraints["crit"]; ok {
 			if crit < cons.Low || crit > cons.High {
-				return
+				return onmyoji.Result{}
 			}
 		}
 
 		opts := onmyoji.DamageOptions{IgnoreCrit: *ignoreCrit, IgnoreSeductress: *ignoreSeduc}
-		if dmg := souls.Damage(m.Shikigami, opts); dmg > bestDmg {
-			bestDmg = dmg
-			bestSouls = souls
-			finalSpeed = spd
-			finalCrit = crit
-		}
+		dmg := souls.Damage(m.Shikigami, opts)
+		return onmyoji.Result{Damage: dmg, Crit: crit, Spd: spd, Souls: souls}
 	})
 
-	log.Printf("dmg = %v, speed = %v, crit = %v", bestDmg, finalSpeed, finalCrit)
-	return bestSouls
+	log.Printf("dmg = %v, speed = %v, crit = %v", best.Damage, best.Spd, best.Crit)
+	return best.Souls
 }
