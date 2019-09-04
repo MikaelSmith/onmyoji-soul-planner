@@ -133,7 +133,7 @@ func soulCounts(soulSet []Soul) map[string]int {
 
 // Empty returns true if the set has no souls.
 func (set SoulSet) Empty() bool {
-	return len(set.souls) == 0
+	return set.souls == [6]Soul{}
 }
 
 // Souls returns the list of souls

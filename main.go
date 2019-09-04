@@ -118,13 +118,13 @@ func main() {
 	for _, place := range team {
 		fmt.Printf("Finding best souls for %v\n", place.Name)
 		souls := bestSouls(place, soulsDb)
-		fmt.Println(souls)
 
 		if souls.Empty() {
 			log.Fatal("Unable to find souls that include 4 of the primary soul and satisfy constraints")
 			break
 		}
 
+		fmt.Println(souls)
 		soulsDb.Remove(souls)
 	}
 }
