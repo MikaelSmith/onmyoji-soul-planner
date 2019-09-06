@@ -28,6 +28,11 @@ func parseConstraint(s string) constraint {
 	var err error
 	consf := make([]int, 2)
 	for i, v := range cons {
+		if v == "" {
+			// Included a dash but left one end open. Leave that end uninitialized.
+			continue
+		}
+
 		if consf[i], err = strconv.Atoi(v); err != nil {
 			log.Fatalf("%v could not be parsed as a number: %v", cons[0], err)
 		}
@@ -139,14 +144,14 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 			spd += sl.Spd
 		}
 		if cons, ok := m.Constraints["spd"]; ok {
-			if spd < cons.Low || spd > cons.High {
+			if (cons.Low > 0 && spd < cons.Low) || (cons.High > 0 && spd > cons.High) {
 				return onmyoji.Result{}
 			}
 		}
 
 		crit := souls.ComputeCrit(m.Shikigami)
 		if cons, ok := m.Constraints["crit"]; ok {
-			if crit < cons.Low || crit > cons.High {
+			if (cons.Low > 0 && crit < cons.Low) || (cons.High > 0 && crit > cons.High) {
 				return onmyoji.Result{}
 			}
 		}
