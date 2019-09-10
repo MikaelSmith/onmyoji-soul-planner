@@ -14,4 +14,4 @@ onmyoji-soul-planner
 
 # Provide your own souls DB and team
 souls.yaml
-team.yaml
+team*.yaml
