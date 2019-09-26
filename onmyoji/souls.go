@@ -216,8 +216,8 @@ type DamageOptions struct {
 }
 
 // ComputeCrit returns the critical hit chance of the shikigami with this soul set.
-func (set SoulSet) ComputeCrit(shiki Shikigami, opts DamageOptions) int {
-	crit := shiki.Crit
+func (set SoulSet) ComputeCrit(shiki Shikigami, critMod int, opts DamageOptions) int {
+	crit := shiki.Crit + critMod
 	for _, sl := range set.Souls() {
 		crit += sl.Crit
 	}
@@ -241,7 +241,7 @@ func (set SoulSet) ComputeCrit(shiki Shikigami, opts DamageOptions) int {
 }
 
 // Damage computes the shikigami's damage output with this soul set.
-func (set SoulSet) Damage(shiki Shikigami, opts DamageOptions) float64 {
+func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) float64 {
 	// soul and shikigami numbers are stored as ints to simplify input. Convert to percentages here.
 	atkbonus := 1.0
 	for _, sl := range set.Souls() {
@@ -263,7 +263,7 @@ func (set SoulSet) Damage(shiki Shikigami, opts DamageOptions) float64 {
 
 	crit := 0.0
 	if !opts.IgnoreCrit {
-		crit = float64(set.ComputeCrit(shiki, opts)) / 100.0
+		crit = float64(set.ComputeCrit(shiki, mod.Crit, opts)) / 100.0
 	}
 
 	critDmg := float64(shiki.CritDmg) / 100.0
@@ -287,4 +287,8 @@ func (set SoulSet) String() string {
 		out += "Slot " + strconv.Itoa(i+1) + ": " + soul.String() + "\n"
 	}
 	return out
+}
+
+type Modifiers struct {
+	Crit int
 }

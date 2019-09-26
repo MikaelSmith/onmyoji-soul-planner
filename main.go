@@ -46,6 +46,7 @@ type member struct {
 	Primary     string
 	Secondary   string
 	Constraints map[string]constraint
+	Modifiers   onmyoji.Modifiers
 }
 
 var soulsSource = flag.String("soulsdb", "souls.yaml", "A YAML file describing your souls")
@@ -158,14 +159,14 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 		}
 
 		opts := onmyoji.DamageOptions{IgnoreCrit: *ignoreCrit, IgnoreSeductress: *ignoreSeduc, YellowImp: *yellowImp}
-		crit := souls.ComputeCrit(m.Shikigami, opts)
+		crit := souls.ComputeCrit(m.Shikigami, m.Modifiers.Crit, opts)
 		if cons, ok := m.Constraints["crit"]; ok {
 			if (cons.Low > 0 && crit < cons.Low) || (cons.High > 0 && crit > cons.High) {
 				return onmyoji.Result{}
 			}
 		}
 
-		dmg := souls.Damage(m.Shikigami, opts)
+		dmg := souls.Damage(m.Shikigami, m.Modifiers, opts)
 		return onmyoji.Result{Damage: dmg, Crit: crit, Spd: spd, Souls: souls}
 	})
 
