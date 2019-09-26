@@ -44,6 +44,7 @@ type member struct {
 	onmyoji.Shikigami
 	Name        string
 	Primary     string
+	Secondary   string
 	Constraints map[string]constraint
 }
 
@@ -109,6 +110,12 @@ func main() {
 			}
 		}
 
+		if place.Secondary != "" {
+			if _, err = onmyoji.SoulSetBonus(place.Secondary); err != nil {
+				log.Fatalf("Error with secondary soul: %v", err)
+			}
+		}
+
 		// Update the team member.
 		team[i] = place
 	}
@@ -139,7 +146,7 @@ func main() {
 }
 
 func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
-	best := soulsDb.BestSet(m.Primary, func(souls onmyoji.SoulSet) onmyoji.Result {
+	best := soulsDb.BestSet(m.Primary, m.Secondary, func(souls onmyoji.SoulSet) onmyoji.Result {
 		spd := m.Spd
 		for _, sl := range souls.Souls() {
 			spd += sl.Spd
