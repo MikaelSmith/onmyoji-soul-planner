@@ -50,9 +50,8 @@ type member struct {
 }
 
 var soulsSource = flag.String("soulsdb", "souls.yaml", "A YAML file describing your souls")
-var ignoreCrit = flag.Bool("ignore-crit", false, "Ignore crit when calculating damage, useful for fights that negate crit")
 var ignoreSeduc = flag.Bool("ignore-seductress", false, "Ignore the seductress set effect when calculating damage")
-var yellowImp = flag.Bool("yellow-imp", false, "Add 15% crit because you plan to use Yellow Imp's boost")
+var critMod = flag.Int("modify-crit", 0, "Modify crit to account for buffs and/or debuffs")
 
 func main() {
 	log.SetPrefix("")
@@ -158,7 +157,7 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 			}
 		}
 
-		opts := onmyoji.DamageOptions{IgnoreCrit: *ignoreCrit, IgnoreSeductress: *ignoreSeduc, YellowImp: *yellowImp}
+		opts := onmyoji.DamageOptions{CritMod: *critMod, IgnoreSeductress: *ignoreSeduc}
 		crit := souls.ComputeCrit(m.Shikigami, m.Modifiers.Crit, opts)
 		if cons, ok := m.Constraints["crit"]; ok {
 			if (cons.Low > 0 && crit < cons.Low) || (cons.High > 0 && crit > cons.High) {

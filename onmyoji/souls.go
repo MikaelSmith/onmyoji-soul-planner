@@ -212,12 +212,13 @@ func (set SoulSet) Count(name string) int {
 
 // DamageOptions is used to pass options that change how damage is calculated.
 type DamageOptions struct {
-	IgnoreCrit, IgnoreSeductress, YellowImp bool
+	CritMod          int
+	IgnoreSeductress bool
 }
 
 // ComputeCrit returns the critical hit chance of the shikigami with this soul set.
 func (set SoulSet) ComputeCrit(shiki Shikigami, critMod int, opts DamageOptions) int {
-	crit := shiki.Crit + critMod
+	crit := shiki.Crit + critMod + opts.CritMod
 	for _, sl := range set.Souls() {
 		crit += sl.Crit
 	}
@@ -229,10 +230,6 @@ func (set SoulSet) ComputeCrit(shiki Shikigami, critMod int, opts DamageOptions)
 		}
 	}
 	crit += 15 * critSouls
-
-	if opts.YellowImp {
-		crit += 15
-	}
 
 	if crit > 100 {
 		crit = 100
@@ -261,10 +258,7 @@ func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) fl
 		atk += float64(sl.Atk)
 	}
 
-	crit := 0.0
-	if !opts.IgnoreCrit {
-		crit = float64(set.ComputeCrit(shiki, mod.Crit, opts)) / 100.0
-	}
+	crit := float64(set.ComputeCrit(shiki, mod.Crit, opts)) / 100.0
 
 	critDmg := float64(shiki.CritDmg) / 100.0
 	for _, sl := range set.Souls() {
