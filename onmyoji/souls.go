@@ -283,6 +283,7 @@ func (set SoulSet) String() string {
 	return out
 }
 
+// Modifiers contains modifications to specific stats.
 type Modifiers struct {
 	Crit int
 }
