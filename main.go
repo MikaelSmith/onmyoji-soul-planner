@@ -50,8 +50,9 @@ type member struct {
 }
 
 var soulsSource = flag.String("soulsdb", "souls.yaml", "A YAML file describing your souls")
-var ignoreSeduc = flag.Bool("ignore-seductress", false, "Ignore the seductress set effect when calculating damage")
+var ignoreSetBonus = flag.Bool("ignore-set", false, "Ignore the primary set effect when calculating damage")
 var critMod = flag.Int("modify-crit", 0, "Modify crit to account for buffs and/or debuffs")
+var orbs = flag.Int("orbs", 5, "Specify how many orbs to assume when attacking")
 
 func main() {
 	log.SetPrefix("")
@@ -157,7 +158,7 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 			}
 		}
 
-		opts := onmyoji.DamageOptions{CritMod: *critMod, IgnoreSeductress: *ignoreSeduc}
+		opts := onmyoji.DamageOptions{CritMod: *critMod, IgnoreSetBonus: *ignoreSetBonus, Orbs: *orbs}
 		crit := souls.ComputeCrit(m.Shikigami, m.Modifiers.Crit, opts)
 		if cons, ok := m.Constraints["crit"]; ok {
 			if (cons.Low > 0 && crit < cons.Low) || (cons.High > 0 && crit > cons.High) {
