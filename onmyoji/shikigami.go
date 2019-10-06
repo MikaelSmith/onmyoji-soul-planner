@@ -30,8 +30,14 @@ var shikigamis = map[string]Shikigami{
 		CritDmg: 150,
 		Spd:     113,
 	},
-	"kamikui": Shikigami{
+	"kamikui g5": Shikigami{
 		Atk:     1741,
+		Crit:    8,
+		CritDmg: 150,
+		Spd:     118,
+	},
+	"kamikui": Shikigami{
+		Atk:     2894,
 		Crit:    8,
 		CritDmg: 150,
 		Spd:     118,
