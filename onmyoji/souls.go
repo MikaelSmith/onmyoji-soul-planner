@@ -241,7 +241,7 @@ func (set SoulSet) ComputeCrit(shiki Shikigami, critMod int, opts DamageOptions)
 // Damage computes the shikigami's damage output with this soul set.
 func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) float64 {
 	// soul and shikigami numbers are stored as ints to simplify input. Convert to percentages here.
-	atkbonus := 1.0
+	atkbonus := 1.0 + float64(mod.AtkBonus)/100.0
 	for _, sl := range set.Souls() {
 		atkbonus += float64(sl.AtkBonus) / 100.0
 	}
@@ -292,5 +292,6 @@ func (set SoulSet) String() string {
 
 // Modifiers contains modifications to specific stats.
 type Modifiers struct {
-	Crit int
+	Crit     int
+	AtkBonus int
 }
