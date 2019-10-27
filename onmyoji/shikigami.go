@@ -78,6 +78,12 @@ var shikigamis = map[string]Shikigami{
 		CritDmg: 150,
 		Spd:     112,
 	},
+	"ryomen": Shikigami{
+		Atk:     3136,
+		Crit:    10,
+		CritDmg: 150,
+		Spd:     109,
+	},
 }
 
 var nicknames = map[string]string{
