@@ -45,6 +45,7 @@ type member struct {
 	Name        string
 	Primary     string
 	Secondary   string
+	Optimize    onmyoji.Optimizer
 	Constraints map[string]constraint
 	Modifiers   onmyoji.Modifiers
 }
@@ -117,6 +118,10 @@ func main() {
 			}
 		}
 
+		if place.Optimize == "" {
+			place.Optimize = onmyoji.Damage
+		}
+
 		// Update the team member.
 		team[i] = place
 	}
@@ -134,20 +139,20 @@ func main() {
 	// After optimizing each member, remove those souls from the db.
 	for _, place := range team {
 		fmt.Printf("Finding best souls for %v\n", place.Name)
-		souls := bestSouls(place, soulsDb)
+		best := bestSouls(place, soulsDb)
 
-		if souls.Empty() {
+		if best.Souls.Empty() {
 			log.Fatal("Unable to find souls that include 4 of the primary soul and satisfy constraints")
 			break
 		}
 
-		fmt.Println(souls)
-		soulsDb.Remove(souls)
+		fmt.Println(best)
+		soulsDb.Remove(best.Souls)
 	}
 }
 
-func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
-	best := soulsDb.BestSet(m.Primary, m.Secondary, func(souls onmyoji.SoulSet) onmyoji.Result {
+func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.Result {
+	return soulsDb.BestSet(m.Primary, m.Secondary, m.Optimize, func(souls onmyoji.SoulSet) onmyoji.Result {
 		spd := m.Spd
 		for _, sl := range souls.Souls() {
 			spd += sl.Spd
@@ -166,10 +171,8 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.SoulSet {
 			}
 		}
 
+		hp := souls.HP(m.Shikigami, m.Modifiers)
 		dmg := souls.Damage(m.Shikigami, m.Modifiers, opts)
-		return onmyoji.Result{Damage: dmg, Crit: crit, Spd: spd, Souls: souls}
+		return onmyoji.Result{HP: hp, Damage: dmg, Crit: crit, Spd: spd, Souls: souls}
 	})
-
-	log.Printf("dmg = %v, speed = %v, crit = %v", best.Damage, best.Spd, best.Crit)
-	return best.Souls
 }

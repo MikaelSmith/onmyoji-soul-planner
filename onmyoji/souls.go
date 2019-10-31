@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+// Optimizer represents what to optimize for.
+type Optimizer string
+
+// Constants for selecting what to optimize.
+const (
+	Damage Optimizer = "Damage"
+	HP               = "HP"
+)
+
 // soulTypes map the name of souls to their 2-soul attribute bonus.
 var soulTypes = map[string]string{
 	"harpy":              "atkbonus",
@@ -37,12 +46,18 @@ func SoulSetBonus(name string) (string, error) {
 
 // Soul contains the name of the soul and stats relevant to damage output.
 type Soul struct {
-	Type                              string
-	Atk, AtkBonus, Crit, CritDmg, Spd int
+	Type                                           string
+	Atk, AtkBonus, Crit, CritDmg, Spd, HP, HPBonus int
 }
 
 func (s Soul) String() string {
 	attrs := make([]string, 0, 5)
+	if s.HP > 0 {
+		attrs = append(attrs, "HP="+strconv.Itoa(s.HP))
+	}
+	if s.HPBonus > 0 {
+		attrs = append(attrs, "HPBonus="+strconv.Itoa(s.HPBonus))
+	}
 	if s.Atk > 0 {
 		attrs = append(attrs, "Atk="+strconv.Itoa(s.Atk))
 	}
@@ -68,15 +83,18 @@ type SoulDb struct {
 
 // Result contains the outcome of applying a soulset to a shikigami.
 type Result struct {
-	Damage    float64
-	Crit, Spd int
-	Souls     SoulSet
+	Damage, HP, Crit, Spd int
+	Souls                 SoulSet
+}
+
+func (r Result) String() string {
+	return fmt.Sprintf("dmg = %v, hp = %v, speed = %v, crit = %v\n%v", r.Damage, r.HP, r.Spd, r.Crit, r.Souls)
 }
 
 // BestSet constructs a SoulSet for each combination of souls in the database. It calls the fitness
 // function on each set that includes at least 4 of the primary soul (if primary is not an empty
 // string). It returns the best set.
-func (db *SoulDb) BestSet(primary, secondary string, fn func(SoulSet) Result) Result {
+func (db *SoulDb) BestSet(primary, secondary string, opt Optimizer, fn func(SoulSet) Result) Result {
 	candidates := make(chan Result)
 
 	match := func(typ string, prim, sec int) (int, int) {
@@ -124,7 +142,7 @@ func (db *SoulDb) BestSet(primary, secondary string, fn func(SoulSet) Result) Re
 								}
 
 								r := fn(NewSoulSet([6]Soul{sl1, sl2, sl3, sl4, sl5, sl6}))
-								if r.Damage > best.Damage {
+								if (opt == Damage && r.Damage > best.Damage) || (opt == HP && r.HP > best.HP) {
 									best = r
 								}
 							}
@@ -239,7 +257,7 @@ func (set SoulSet) ComputeCrit(shiki Shikigami, critMod int, opts DamageOptions)
 }
 
 // Damage computes the shikigami's damage output with this soul set.
-func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) float64 {
+func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) int {
 	// soul and shikigami numbers are stored as ints to simplify input. Convert to percentages here.
 	atkbonus := 1.0 + float64(mod.AtkBonus)/100.0
 	for _, sl := range set.Souls() {
@@ -279,7 +297,30 @@ func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) fl
 			dmg *= (1.0 + 0.08*float64(opts.Orbs))
 		}
 	}
-	return dmg
+	return int(dmg)
+}
+
+// HP returns the shikigami's HP with this soul set.
+func (set SoulSet) HP(shiki Shikigami, mod Modifiers) int {
+	// soul and shikigami numbers are stored as ints to simplify input. Convert to percentages here.
+	hpbonus := 1.0 + float64(mod.HPBonus)/100.0
+	for _, sl := range set.Souls() {
+		hpbonus += float64(sl.HPBonus) / 100.0
+	}
+
+	hpSouls := 0
+	for name, attr := range soulTypes {
+		if attr == "hpbonus" && set.Count(name) >= 2 {
+			hpSouls++
+		}
+	}
+	hpbonus += 0.15 * float64(hpSouls)
+
+	hp := float64(shiki.HP) * hpbonus
+	for _, sl := range set.Souls() {
+		hp += float64(sl.HP)
+	}
+	return int(hp)
 }
 
 func (set SoulSet) String() string {
@@ -292,6 +333,5 @@ func (set SoulSet) String() string {
 
 // Modifiers contains modifications to specific stats.
 type Modifiers struct {
-	Crit     int
-	AtkBonus int
+	Crit, AtkBonus, HPBonus int
 }
