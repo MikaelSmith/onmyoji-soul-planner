@@ -107,6 +107,14 @@ var shikigamis = map[string]Shikigami{
 		CritDmg: 150,
 		Spd:     109,
 	},
+	"ootengu": Shikigami{
+		HP:       10026,
+		Atk:      3136,
+		Crit:     10,
+		CritDmg:  150,
+		Spd:      110,
+		Multihit: true,
+	},
 }
 
 var nicknames = map[string]string{
