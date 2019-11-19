@@ -288,6 +288,10 @@ func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) in
 	if set.Count("Odokuro") >= 2 {
 		dmg *= 1.1
 	}
+	if shiki.Multihit && set.Count("Ghostly Songstress") >= 2 {
+		// Every 6th hit deals extra 255% of Atk (up to 20% of target's max HP).
+		dmg += (2.55 * atk) / 6
+	}
 	if !opts.IgnoreSetBonus {
 		if set.Count("Seductress") >= 4 {
 			dmg += 1.2 * crit * atk

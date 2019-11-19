@@ -8,16 +8,18 @@ import (
 // Shikigami encapsulates a shikigami's damage-related attributes.
 type Shikigami struct {
 	HP, Atk, Spd, Crit, CritDmg int
+	Multihit                    bool
 }
 
 // Shikigamis lists the stats for a variety of shikigami.
 var shikigamis = map[string]Shikigami{
 	"onikiri": Shikigami{
-		HP:      10823,
-		Atk:     3350,
-		Crit:    11,
-		CritDmg: 160,
-		Spd:     117,
+		HP:       10823,
+		Atk:      3350,
+		Crit:     11,
+		CritDmg:  160,
+		Spd:      117,
+		Multihit: true,
 	},
 	"ibaraki doji": Shikigami{
 		HP:      10254,
@@ -27,11 +29,12 @@ var shikigamis = map[string]Shikigami{
 		Spd:     112,
 	},
 	"ubume": Shikigami{
-		HP:      10823,
-		Atk:     3082,
-		Crit:    10,
-		CritDmg: 150,
-		Spd:     113,
+		HP:       10823,
+		Atk:      3082,
+		Crit:     10,
+		CritDmg:  150,
+		Spd:      113,
+		Multihit: true,
 	},
 	"kamikui g5": Shikigami{
 		Atk:     1741,
@@ -61,17 +64,19 @@ var shikigamis = map[string]Shikigami{
 		Spd:     110,
 	},
 	"nekomata": Shikigami{
-		Atk:     3002,
-		Crit:    10,
-		CritDmg: 150,
-		Spd:     118,
+		Atk:      3002,
+		Crit:     10,
+		CritDmg:  150,
+		Spd:      118,
+		Multihit: true,
 	},
 	"kisei": Shikigami{
-		HP:      9912,
-		Atk:     3002,
-		Crit:    8,
-		CritDmg: 150,
-		Spd:     106,
+		HP:       9912,
+		Atk:      3002,
+		Crit:     8,
+		CritDmg:  150,
+		Spd:      106,
+		Multihit: true,
 	},
 	"shiranui": Shikigami{
 		HP:      9229,
@@ -88,11 +93,12 @@ var shikigamis = map[string]Shikigami{
 		Spd:     112,
 	},
 	"ryomen": Shikigami{
-		HP:      10482,
-		Atk:     3136,
-		Crit:    10,
-		CritDmg: 150,
-		Spd:     109,
+		HP:       10482,
+		Atk:      3136,
+		Crit:     10,
+		CritDmg:  150,
+		Spd:      109,
+		Multihit: true,
 	},
 	"bukkuman": Shikigami{
 		HP:      11393,
