@@ -44,7 +44,9 @@ type member struct {
 	onmyoji.Shikigami
 	Name        string
 	Primary     string
+	Primaries   []string
 	Secondary   string
+	Secondaries []string
 	Optimize    onmyoji.Optimizer
 	Constraints map[string]constraint
 	Modifiers   onmyoji.Modifiers
@@ -54,6 +56,10 @@ var soulsSource = flag.String("soulsdb", "souls.yaml", "A YAML file describing y
 var ignoreSetBonus = flag.Bool("ignore-set", false, "Ignore the primary set effect when calculating damage")
 var critMod = flag.Int("modify-crit", 0, "Modify crit to account for buffs and/or debuffs")
 var orbs = flag.Int("orbs", 5, "Specify how many orbs to assume when attacking")
+
+func splitSouls(arg string) []string {
+	return strings.Split(arg, "|")
+}
 
 func main() {
 	log.SetPrefix("")
@@ -87,7 +93,7 @@ func main() {
 			constraints[key] = parseConstraint(pair[1])
 		}
 
-		team = append(team, member{Name: name, Primary: mainSoul, Constraints: constraints})
+		team = append(team, member{Name: name, Primaries: splitSouls(mainSoul), Constraints: constraints})
 	} else {
 		source, err := ioutil.ReadFile(args[0])
 		if err != nil {
@@ -107,13 +113,27 @@ func main() {
 		place.Shikigami = shiki
 
 		if place.Primary != "" {
-			if _, err = onmyoji.SoulSetBonus(place.Primary); err != nil {
+			if len(place.Primaries) > 0 {
+				log.Fatalf("Shiki %v: only set one of primary or primaries", place.Name)
+			}
+			place.Primaries = []string{place.Primary}
+		}
+
+		for _, primary := range place.Primaries {
+			if _, err = onmyoji.SoulSetBonus(primary); err != nil {
 				log.Fatalf("Error with primary soul: %v", err)
 			}
 		}
 
 		if place.Secondary != "" {
-			if _, err = onmyoji.SoulSetBonus(place.Secondary); err != nil {
+			if len(place.Secondaries) > 0 {
+				log.Fatalf("Shiki %v: only set one of secondary or secondaries", place.Name)
+			}
+			place.Primaries = []string{place.Primary}
+		}
+
+		for _, secondary := range place.Secondaries {
+			if _, err = onmyoji.SoulSetBonus(secondary); err != nil {
 				log.Fatalf("Error with secondary soul: %v", err)
 			}
 		}
@@ -138,7 +158,7 @@ func main() {
 
 	// After optimizing each member, remove those souls from the db.
 	for _, place := range team {
-		fmt.Printf("Finding best souls for %v\n", place.Name)
+		fmt.Printf("Finding best souls for %v with %v\n", place.Name, strings.Join(place.Primaries, ", "))
 		best := bestSouls(place, soulsDb)
 
 		if best.Souls.Empty() {
@@ -152,7 +172,7 @@ func main() {
 }
 
 func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.Result {
-	return soulsDb.BestSet(m.Primary, m.Secondary, m.Optimize, func(souls onmyoji.SoulSet) onmyoji.Result {
+	return soulsDb.BestSet(m.Primaries, m.Secondaries, m.Optimize, func(souls onmyoji.SoulSet) onmyoji.Result {
 		spd := m.Spd
 		for _, sl := range souls.Souls() {
 			spd += sl.Spd

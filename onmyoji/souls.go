@@ -91,17 +91,26 @@ func (r Result) String() string {
 	return fmt.Sprintf("dmg = %v, hp = %v, speed = %v, crit = %v\n%v", r.Damage, r.HP, r.Spd, r.Crit, r.Souls)
 }
 
+func contains(names []string, name string) bool {
+	for _, n := range names {
+		if n == name {
+			return true
+		}
+	}
+	return false
+}
+
 // BestSet constructs a SoulSet for each combination of souls in the database. It calls the fitness
 // function on each set that includes at least 4 of the primary soul (if primary is not an empty
 // string). It returns the best set.
-func (db *SoulDb) BestSet(primary, secondary string, opt Optimizer, fn func(SoulSet) Result) Result {
+func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn func(SoulSet) Result) Result {
 	candidates := make(chan Result)
 
 	match := func(typ string, prim, sec int) (int, int) {
-		if typ == primary {
+		if contains(primaries, typ) {
 			prim++
 		}
-		if typ == secondary {
+		if contains(secondaries, typ) {
 			sec++
 		}
 		return prim, sec
@@ -119,25 +128,25 @@ func (db *SoulDb) BestSet(primary, secondary string, opt Optimizer, fn func(Soul
 					primary3, secondary3 := match(sl3.Type, primary2, secondary2)
 					// Starting once we have 3 souls, test that we have sufficient copies of the primary soul
 					// type to complete a set of 4. If not, skip this set of combinations.
-					if primary != "" && primary3 == 0 {
+					if len(primaries) > 0 && primary3 == 0 {
 						continue
 					}
 
 					for _, sl4 := range db.Slot4 {
 						primary4, secondary4 := match(sl4.Type, primary3, secondary3)
-						if primary != "" && primary4 <= 1 {
+						if len(primaries) > 0 && primary4 <= 1 {
 							continue
 						}
 
 						for _, sl5 := range db.Slot5 {
 							primary5, secondary5 := match(sl5.Type, primary4, secondary4)
-							if (primary != "" && primary5 <= 2) || (secondary != "" && secondary5 == 0) {
+							if (len(primaries) > 0 && primary5 <= 2) || (len(secondaries) > 0 && secondary5 == 0) {
 								continue
 							}
 
 							for _, sl6 := range db.Slot6 {
 								primary6, secondary6 := match(sl6.Type, primary5, secondary5)
-								if (primary != "" && primary6 <= 3) || (secondary != "" && secondary6 <= 1) {
+								if (len(primaries) > 0 && primary6 <= 3) || (len(secondaries) > 0 && secondary6 <= 1) {
 									continue
 								}
 
