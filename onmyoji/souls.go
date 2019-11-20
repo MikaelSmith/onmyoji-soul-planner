@@ -13,6 +13,7 @@ type Optimizer string
 const (
 	Damage Optimizer = "Damage"
 	HP               = "HP"
+	Heal             = "Heal"
 )
 
 // soulTypes map the name of souls to their 2-soul attribute bonus.
@@ -83,12 +84,12 @@ type SoulDb struct {
 
 // Result contains the outcome of applying a soulset to a shikigami.
 type Result struct {
-	Damage, HP, Crit, Spd int
-	Souls                 SoulSet
+	Damage, Heal, HP, Crit, Spd int
+	Souls                       SoulSet
 }
 
 func (r Result) String() string {
-	return fmt.Sprintf("dmg = %v, hp = %v, speed = %v, crit = %v\n%v", r.Damage, r.HP, r.Spd, r.Crit, r.Souls)
+	return fmt.Sprintf("dmg = %v, heal = %v, hp = %v, speed = %v, crit = %v\n%v", r.Damage, r.Heal, r.HP, r.Spd, r.Crit, r.Souls)
 }
 
 func contains(names []string, name string) bool {
@@ -151,7 +152,9 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 								}
 
 								r := fn(NewSoulSet([6]Soul{sl1, sl2, sl3, sl4, sl5, sl6}))
-								if (opt == Damage && r.Damage > best.Damage) || (opt == HP && r.HP > best.HP) {
+								if (opt == Damage && r.Damage > best.Damage) ||
+									(opt == Heal && r.Heal > best.Heal) ||
+									(opt == HP && r.HP > best.HP) {
 									best = r
 								}
 							}
@@ -311,6 +314,21 @@ func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) in
 		}
 	}
 	return int(dmg)
+}
+
+// Heal returns the healing prowess of the shikigami, evaluated as HP * Crit * CritDmg
+func (set SoulSet) Heal(shiki Shikigami, mod Modifiers, opts DamageOptions) int {
+	hp := set.HP(shiki, mod)
+
+	crit := float64(set.ComputeCrit(shiki, mod.Crit, opts)) / 100.0
+
+	critDmg := float64(shiki.CritDmg) / 100.0
+	for _, sl := range set.Souls() {
+		critDmg += float64(sl.CritDmg) / 100.0
+	}
+
+	heal := float64(hp) * (crit*critDmg + (1.0 - crit))
+	return int(heal)
 }
 
 // HP returns the shikigami's HP with this soul set.

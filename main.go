@@ -193,6 +193,7 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.Result {
 
 		hp := souls.HP(m.Shikigami, m.Modifiers)
 		dmg := souls.Damage(m.Shikigami, m.Modifiers, opts)
-		return onmyoji.Result{HP: hp, Damage: dmg, Crit: crit, Spd: spd, Souls: souls}
+		heal := souls.Heal(m.Shikigami, m.Modifiers, opts)
+		return onmyoji.Result{HP: hp, Heal: heal, Damage: dmg, Crit: crit, Spd: spd, Souls: souls}
 	})
 }
