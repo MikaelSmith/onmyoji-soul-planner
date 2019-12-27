@@ -50,11 +50,12 @@ var shikigamis = map[string]Shikigami{
 		Spd:     118,
 	},
 	"shuten doji": Shikigami{
-		HP:      11165,
-		Atk:     3136,
-		Crit:    10,
-		CritDmg: 150,
-		Spd:     113,
+		HP:       11165,
+		Atk:      3136,
+		Crit:     10,
+		CritDmg:  150,
+		Spd:      113,
+		Multihit: true,
 	},
 	"tamamonomae": Shikigami{
 		HP:      12532,
