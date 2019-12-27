@@ -62,15 +62,19 @@ func splitSouls(arg string) []string {
 }
 
 func main() {
+	flag.Usage = func() {
+		fmt.Println(`Usage: onmyoji-soul-planner [options] <team.yaml> OR
+       onmyoji-soul-planner [options] <shikigami> <main soul> [<attr>=<constraint>]`)
+		flag.PrintDefaults()
+	}
+
 	log.SetPrefix("")
 	log.SetFlags(0)
 	flag.Parse()
 
 	args := flag.Args()
 	if len(args) == 0 {
-		fmt.Println(`Usage: onmyoji-soul-planner [options] <team.yaml> OR
-       onmyoji-soul-planner [options] <shikigami> <main soul> [<attr>=<constraint>]`)
-		flag.PrintDefaults()
+		flag.Usage()
 		os.Exit(0)
 	}
 
