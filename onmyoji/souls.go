@@ -314,7 +314,7 @@ func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) in
 	if !opts.IgnoreSetBonus {
 		if set.Count("Seductress") >= 4 {
 			dmg += 1.2 * crit * atk
-		} else if set.Count("Shadow") >= 4 {
+		} else if set.Count("Shadow") >= 4 || set.Count("Watcher") >= 4 {
 			dmg *= 1.4
 		} else if set.Count("Kyoukotsu") >= 4 {
 			dmg *= (1.0 + 0.08*float64(opts.Orbs))
