@@ -133,7 +133,7 @@ func main() {
 			if len(place.Secondaries) > 0 {
 				log.Fatalf("Shiki %v: only set one of secondary or secondaries", place.Name)
 			}
-			place.Primaries = []string{place.Primary}
+			place.Secondaries = []string{place.Secondary}
 		}
 
 		for _, secondary := range place.Secondaries {
