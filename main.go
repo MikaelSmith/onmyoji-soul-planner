@@ -54,7 +54,10 @@ type member struct {
 
 var soulsSource = flag.String("soulsdb", "souls.yaml", "A YAML file describing your souls")
 var ignoreSetBonus = flag.Bool("ignore-set", false, "Ignore the primary set effect when calculating damage")
+var atkMod = flag.Int("modify-atk", 0, "Modify attack to account for buffs and/or debuffs")
+var atkBonusMod = flag.Int("modify-atkbonus", 0, "Modify attack bonus to account for buffs and/or debuffs")
 var critMod = flag.Int("modify-crit", 0, "Modify crit to account for buffs and/or debuffs")
+var critDmgMod = flag.Int("modify-critdmg", 0, "Modify crit damage to account for buffs and/or debuffs")
 var orbs = flag.Int("orbs", 5, "Specify how many orbs to assume when attacking")
 
 func splitSouls(arg string) []string {
@@ -187,17 +190,26 @@ func bestSouls(m member, soulsDb onmyoji.SoulDb) onmyoji.Result {
 			}
 		}
 
-		opts := onmyoji.DamageOptions{CritMod: *critMod, IgnoreSetBonus: *ignoreSetBonus, Orbs: *orbs}
-		crit := souls.ComputeCrit(m.Shikigami, m.Modifiers.Crit, opts)
+		opts := onmyoji.DamageOptions{IgnoreSetBonus: *ignoreSetBonus, Orbs: *orbs}
+		mods := applyCliMods(m.Modifiers)
+		crit := souls.ComputeCrit(m.Shikigami, mods.Crit)
 		if cons, ok := m.Constraints["crit"]; ok {
 			if (cons.Low > 0 && crit < cons.Low) || (cons.High > 0 && crit > cons.High) {
 				return onmyoji.Result{}
 			}
 		}
 
-		hp := souls.HP(m.Shikigami, m.Modifiers)
-		dmg := souls.Damage(m.Shikigami, m.Modifiers, opts)
-		heal := souls.Heal(m.Shikigami, m.Modifiers, opts)
+		hp := souls.HP(m.Shikigami, mods)
+		dmg := souls.Damage(m.Shikigami, mods, opts)
+		heal := souls.Heal(m.Shikigami, mods)
 		return onmyoji.Result{HP: hp, Heal: heal, Damage: dmg, Crit: crit, Spd: spd, Souls: souls}
 	})
+}
+
+func applyCliMods(mods onmyoji.Modifiers) onmyoji.Modifiers {
+	mods.Atk += *atkMod
+	mods.AtkBonus += *atkBonusMod
+	mods.Crit += *critMod
+	mods.CritDmg += *critDmgMod
+	return mods
 }

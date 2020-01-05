@@ -249,14 +249,13 @@ func (set SoulSet) Count(name string) int {
 
 // DamageOptions is used to pass options that change how damage is calculated.
 type DamageOptions struct {
-	CritMod        int
 	IgnoreSetBonus bool
 	Orbs           int
 }
 
 // ComputeCrit returns the critical hit chance of the shikigami with this soul set.
-func (set SoulSet) ComputeCrit(shiki Shikigami, critMod int, opts DamageOptions) int {
-	crit := shiki.Crit + critMod + opts.CritMod
+func (set SoulSet) ComputeCrit(shiki Shikigami, critMod int) int {
+	crit := shiki.Crit + critMod
 	for _, sl := range set.Souls() {
 		crit += sl.Crit
 	}
@@ -291,14 +290,14 @@ func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) in
 	}
 	atkbonus += 0.15 * float64(atkSouls)
 
-	atk := float64(shiki.Atk) * atkbonus
+	atk := float64(shiki.Atk+mod.Atk) * atkbonus
 	for _, sl := range set.Souls() {
 		atk += float64(sl.Atk)
 	}
 
-	crit := float64(set.ComputeCrit(shiki, mod.Crit, opts)) / 100.0
+	crit := float64(set.ComputeCrit(shiki, mod.Crit)) / 100.0
 
-	critDmg := float64(shiki.CritDmg) / 100.0
+	critDmg := float64(shiki.CritDmg+mod.CritDmg) / 100.0
 	for _, sl := range set.Souls() {
 		critDmg += float64(sl.CritDmg) / 100.0
 	}
@@ -324,10 +323,10 @@ func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) in
 }
 
 // Heal returns the healing prowess of the shikigami, evaluated as HP * Crit * CritDmg
-func (set SoulSet) Heal(shiki Shikigami, mod Modifiers, opts DamageOptions) int {
+func (set SoulSet) Heal(shiki Shikigami, mod Modifiers) int {
 	hp := set.HP(shiki, mod)
 
-	crit := float64(set.ComputeCrit(shiki, mod.Crit, opts)) / 100.0
+	crit := float64(set.ComputeCrit(shiki, mod.Crit)) / 100.0
 
 	critDmg := float64(shiki.CritDmg) / 100.0
 	for _, sl := range set.Souls() {
@@ -371,5 +370,5 @@ func (set SoulSet) String() string {
 
 // Modifiers contains modifications to specific stats.
 type Modifiers struct {
-	Crit, AtkBonus, HPBonus int
+	Crit, CritDmg, Atk, AtkBonus, HPBonus int
 }
