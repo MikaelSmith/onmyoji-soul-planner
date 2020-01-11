@@ -61,13 +61,16 @@ var critDmgMod = flag.Int("modify-critdmg", 0, "Modify crit damage to account fo
 var orbs = flag.Int("orbs", 5, "Specify how many orbs to assume when attacking")
 
 func splitSouls(arg string) []string {
+	if len(arg) == 0 {
+		return []string{}
+	}
 	return strings.Split(arg, "|")
 }
 
 func main() {
 	flag.Usage = func() {
 		fmt.Println(`Usage: onmyoji-soul-planner [options] <team.yaml> OR
-       onmyoji-soul-planner [options] <shikigami> <main soul> [<attr>=<constraint>]`)
+       onmyoji-soul-planner [options] <shikigami> <main soul> [<secondary soul>] [<attr>=<constraint>]`)
 		flag.PrintDefaults()
 	}
 
@@ -83,11 +86,17 @@ func main() {
 
 	var team []member
 	if len(args) > 1 {
-		name, mainSoul := args[0], args[1]
+		name, mainSoul, secondarySoul := args[0], args[1], ""
+
+		rem := args[2:]
+		if len(rem) > 0 && !strings.Contains(rem[0], "=") {
+			secondarySoul = rem[0]
+			rem = rem[1:]
+		}
 
 		constraints := make(map[string]constraint)
 		allowed := map[string]struct{}{"crit": struct{}{}, "spd": struct{}{}}
-		for _, arg := range args[2:] {
+		for _, arg := range rem {
 			pair := strings.Split(arg, "=")
 			if len(pair) != 2 {
 				log.Fatalf("Unknown argument %v, must be of the form <attribute>=<range>, such as spd=117-127 or crit=1.0", arg)
@@ -100,7 +109,12 @@ func main() {
 			constraints[key] = parseConstraint(pair[1])
 		}
 
-		team = append(team, member{Name: name, Primaries: splitSouls(mainSoul), Constraints: constraints})
+		team = append(team, member{
+			Name:        name,
+			Primaries:   splitSouls(mainSoul),
+			Secondaries: splitSouls(secondarySoul),
+			Constraints: constraints,
+		})
 	} else {
 		source, err := ioutil.ReadFile(args[0])
 		if err != nil {
