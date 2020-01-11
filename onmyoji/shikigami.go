@@ -131,6 +131,14 @@ var shikigamis = map[string]Shikigami{
 		CritDmg: 150,
 		Spd:     118,
 	},
+	"inuyasha": Shikigami{
+		HP:       11393,
+		Atk:      2975,
+		Crit:     10,
+		CritDmg:  150,
+		Spd:      114,
+		Multihit: true,
+	},
 }
 
 var nicknames = map[string]string{
