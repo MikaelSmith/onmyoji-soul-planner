@@ -269,7 +269,9 @@ func (set SoulSet) ComputeCrit(shiki Shikigami, critMod int) int {
 	crit += 15 * critSouls
 
 	if crit > 100 {
-		crit = 100
+		return 100
+	} else if crit < 0 {
+		return 0
 	}
 	return crit
 }
