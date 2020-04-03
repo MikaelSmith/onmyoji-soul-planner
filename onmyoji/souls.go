@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/benbjohnson/immutable"
 )
 
 // Optimizer represents what to optimize for.
@@ -114,47 +116,106 @@ func contains(names []string, name string) bool {
 func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn func(SoulSet) Result) Result {
 	candidates := make(chan Result)
 
-	match := func(typ string, prim, sec int) (int, int) {
+	type setcompletion = int
+	const (
+		partial setcompletion = iota
+		complete
+	)
+
+	match := func(typ, primName string, primCount int, secs *immutable.Map) (string, int, *immutable.Map) {
 		if contains(primaries, typ) {
-			prim++
+			if primName == "" {
+				return typ, 1, secs
+			}
+			if primName != typ {
+				return "", 0, nil
+			}
+			return primName, primCount + 1, secs
 		}
-		if contains(secondaries, typ) {
-			sec++
+		if contains(secondaries, typ) || (len(primaries) == 0 && len(secondaries) == 0) {
+			// If matched to secondaries, or no primaries or secondaries were requested, add to secondaries.
+			if val, ok := secs.Get(typ); ok {
+				if val.(setcompletion) == complete {
+					// Don't allow more than two of a secondary.
+					return "", 0, nil
+				}
+				secs = secs.Set(typ, complete)
+			} else {
+				secs = secs.Set(typ, partial)
+			}
+
+			if (len(primaries) > 0 && secs.Len() > 1) || secs.Len() > 3 {
+				// If primary is requested, only allow 1 secondary. Else only allow 3 secondaries.
+				return "", 0, nil
+			}
+			return primName, primCount, secs
 		}
-		return prim, sec
+		// If primaries or secondaries were requested, then we want to stop if we didn't match either.
+		return "", 0, nil
 	}
 
+	primName, primCount := "", 0
+	secs := immutable.NewMap(nil)
+
+	numCandidates := 0
 	for _, sl1 := range db.Slot1 {
-		primary1, secondary1 := match(sl1.Type, 0, 0)
+		primName, primCount, secs := match(sl1.Type, primName, primCount, secs)
+		if secs == nil {
+			continue
+		}
+		numCandidates++
 
 		go func(sl1 Soul) {
 			var best Result
 			for _, sl2 := range db.Slot2 {
-				primary2, secondary2 := match(sl2.Type, primary1, secondary1)
+				primName, primCount, secs := match(sl2.Type, primName, primCount, secs)
+				if secs == nil {
+					continue
+				}
 
 				for _, sl3 := range db.Slot3 {
-					primary3, secondary3 := match(sl3.Type, primary2, secondary2)
+					primName, primCount, secs := match(sl3.Type, primName, primCount, secs)
+					if secs == nil {
+						continue
+					}
 					// Starting once we have 3 souls, test that we have sufficient copies of the primary soul
 					// type to complete a set of 4. If not, skip this set of combinations.
-					if len(primaries) > 0 && primary3 == 0 {
+					if len(primaries) > 0 && primCount < 1 {
 						continue
 					}
 
 					for _, sl4 := range db.Slot4 {
-						primary4, secondary4 := match(sl4.Type, primary3, secondary3)
-						if len(primaries) > 0 && primary4 <= 1 {
+						primName, primCount, secs := match(sl4.Type, primName, primCount, secs)
+						if secs == nil {
+							continue
+						}
+						if len(primaries) > 0 && primCount < 2 {
 							continue
 						}
 
 						for _, sl5 := range db.Slot5 {
-							primary5, secondary5 := match(sl5.Type, primary4, secondary4)
-							if (len(primaries) > 0 && primary5 <= 2) || (len(secondaries) > 0 && secondary5 == 0) {
+							primName, primCount, secs := match(sl5.Type, primName, primCount, secs)
+							if secs == nil {
+								continue
+							}
+							if len(primaries) > 0 && primCount < 3 {
+								continue
+							}
+							// If we haven't found enough secondaries yet, skip.
+							if primName != "" {
+								if secs.Len() < 1 {
+									continue
+								}
+							} else if secs.Len() < 3 {
 								continue
 							}
 
 							for _, sl6 := range db.Slot6 {
-								primary6, secondary6 := match(sl6.Type, primary5, secondary5)
-								if (len(primaries) > 0 && primary6 <= 3) || (len(secondaries) > 0 && secondary6 <= 1) {
+								_, primCount, secs := match(sl6.Type, primName, primCount, secs)
+								if secs == nil {
+									continue
+								}
+								if len(primaries) > 0 && primCount < 4 {
 									continue
 								}
 
@@ -174,7 +235,7 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 	}
 
 	var best Result
-	for i := 0; i < len(db.Slot1); i++ {
+	for i := 0; i < numCandidates; i++ {
 		r := <-candidates
 		if r.Damage > best.Damage {
 			best = r
