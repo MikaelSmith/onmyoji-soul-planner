@@ -163,18 +163,19 @@ var shikigamis = map[string]Shikigami{
 }
 
 var nicknames = map[string]string{
-	"iba":        "ibaraki doji",
-	"ibaraki":    "ibaraki doji",
-	"shuten":     "shuten doji",
-	"oni":        "onikiri",
-	"tama":       "tamamonomae",
-	"tamamo":     "tamamonomae",
-	"sp iba":     "sp ibaraki doji",
-	"sp ibaraki": "sp ibaraki doji",
-	"sp yoto":    "sp crimson yoto",
-	"sp shuten":  "sp shuten doji",
-	"sp tama":    "sp blazing tamamanomae",
-	"sp tamamo":  "sp blazing tamamanomae",
+	"iba":            "ibaraki doji",
+	"ibaraki":        "ibaraki doji",
+	"shuten":         "shuten doji",
+	"oni":            "onikiri",
+	"tama":           "tamamonomae",
+	"tamamo":         "tamamonomae",
+	"sp iba":         "sp ibaraki doji",
+	"sp ibaraki":     "sp ibaraki doji",
+	"sp yoto":        "sp crimson yoto",
+	"sp shuten":      "sp shuten doji",
+	"sp tama":        "sp blazing tamamanomae",
+	"sp tamamo":      "sp blazing tamamanomae",
+	"sp tamamonomae": "sp blazing tamamanomae",
 }
 
 // GetShikigami returns attributes for the named shikigami.
