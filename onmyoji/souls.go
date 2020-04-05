@@ -134,7 +134,7 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 			}
 			return primName, primCount + 1, secs
 		}
-		if contains(secondaries, typ) || (len(primaries) == 0 && len(secondaries) == 0) {
+		if contains(secondaries, typ) || len(secondaries) == 0 {
 			// If matched to secondaries, or no primaries or secondaries were requested, add to secondaries.
 			if val, ok := secs.Get(typ); ok {
 				if val.(setcompletion) == complete {
