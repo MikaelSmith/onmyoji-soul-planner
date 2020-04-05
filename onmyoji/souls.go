@@ -146,8 +146,8 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 				secs = secs.Set(typ, partial)
 			}
 
-			if (len(primaries) > 0 && secs.Len() > 1) || secs.Len() > 3 {
-				// If primary is requested, only allow 1 secondary. Else only allow 3 secondaries.
+			if (len(primaries) > 0 && secs.Len() > 2) || secs.Len() > 4 {
+				// If primary is requested, allow up to 2 secondary. Else allow up to 4 secondaries.
 				return "", 0, nil
 			}
 			return primName, primCount, secs
