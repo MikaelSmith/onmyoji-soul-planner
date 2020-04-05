@@ -20,26 +20,28 @@ const (
 
 // soulTypes map the name of souls to their 2-soul attribute bonus.
 var soulTypes = map[string]string{
-	"harpy":              "atkbonus",
-	"watcher":            "atkbonus",
-	"house imp":          "atkbonus",
-	"scarlet":            "atkbonus",
-	"soultaker":          "atkbonus",
-	"nightwing":          "atkbonus",
-	"kyoukotsu":          "atkbonus",
+	"harpy":              "atk bonus",
+	"watcher":            "atk bonus",
+	"house imp":          "atk bonus",
+	"scarlet":            "atk bonus",
+	"soultaker":          "atk bonus",
+	"nightwing":          "atk bonus",
+	"kyoukotsu":          "atk bonus",
 	"tomb guard":         "crit",
 	"shadow":             "crit",
 	"fenikkusu":          "crit",
 	"claws":              "crit",
 	"samisen":            "crit",
 	"seductress":         "crit",
-	"tree spirit":        "hpbonus",
-	"soul edge":          "hpbonus",
-	"priestess":          "hpbonus",
-	"mirror lady":        "hpbonus",
-	"boroboroton":        "hpbonus",
-	"jizo statue":        "hpbonus",
-	"holy flame":         "hpbonus",
+	"tree spirit":        "hp bonus",
+	"soul edge":          "hp bonus",
+	"priestess":          "hp bonus",
+	"mirror lady":        "hp bonus",
+	"boroboroton":        "hp bonus",
+	"jizo statue":        "hp bonus",
+	"holy flame":         "hp bonus",
+	"fortune cat":        "def bonus",
+	"azure basan":        "effect hit",
 	"namazu":             "",
 	"odokuro":            "",
 	"tsuchigumo":         "",
@@ -347,7 +349,7 @@ func (set SoulSet) Damage(shiki Shikigami, mod Modifiers, opts DamageOptions) in
 
 	atkSouls := 0
 	for name, attr := range soulTypes {
-		if attr == "atkbonus" && set.Count(name) >= 2 {
+		if attr == "atk bonus" && set.Count(name) >= 2 {
 			atkSouls++
 		}
 	}
@@ -410,7 +412,7 @@ func (set SoulSet) HP(shiki Shikigami, mod Modifiers) int {
 
 	hpSouls := 0
 	for name, attr := range soulTypes {
-		if attr == "hpbonus" && set.Count(name) >= 2 {
+		if attr == "hp bonus" && set.Count(name) >= 2 {
 			hpSouls++
 		}
 	}
