@@ -64,7 +64,7 @@ func splitSouls(arg string) []string {
 	if len(arg) == 0 {
 		return []string{}
 	}
-	return strings.Split(arg, "|")
+	return strings.FieldsFunc(arg, func(c rune) bool { return c == '|' || c == ',' })
 }
 
 func main() {
