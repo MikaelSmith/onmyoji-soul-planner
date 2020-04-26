@@ -95,7 +95,7 @@ func main() {
 		}
 
 		constraints := make(map[string]constraint)
-		allowed := map[string]struct{}{"crit": struct{}{}, "spd": struct{}{}}
+		allowed := map[string]struct{}{"crit": {}, "spd": {}}
 		for _, arg := range rem {
 			pair := strings.Split(arg, "=")
 			if len(pair) != 2 {

@@ -13,7 +13,7 @@ type Shikigami struct {
 
 // Shikigamis lists the stats for a variety of shikigami.
 var shikigamis = map[string]Shikigami{
-	"onikiri": Shikigami{
+	"onikiri": {
 		HP:       10823,
 		Atk:      3350,
 		Crit:     11,
@@ -21,14 +21,14 @@ var shikigamis = map[string]Shikigami{
 		Spd:      117,
 		Multihit: true,
 	},
-	"ibaraki doji": Shikigami{
+	"ibaraki doji": {
 		HP:      10254,
 		Atk:     3216,
 		Crit:    10,
 		CritDmg: 150,
 		Spd:     112,
 	},
-	"ubume": Shikigami{
+	"ubume": {
 		HP:       10823,
 		Atk:      3082,
 		Crit:     10,
@@ -36,20 +36,20 @@ var shikigamis = map[string]Shikigami{
 		Spd:      113,
 		Multihit: true,
 	},
-	"kamikui g5": Shikigami{
+	"kamikui g5": {
 		Atk:     1741,
 		Crit:    8,
 		CritDmg: 150,
 		Spd:     118,
 	},
-	"kamikui": Shikigami{
+	"kamikui": {
 		HP:      10709,
 		Atk:     2894,
 		Crit:    8,
 		CritDmg: 150,
 		Spd:     118,
 	},
-	"shuten doji": Shikigami{
+	"shuten doji": {
 		HP:       11165,
 		Atk:      3136,
 		Crit:     10,
@@ -57,21 +57,21 @@ var shikigamis = map[string]Shikigami{
 		Spd:      113,
 		Multihit: true,
 	},
-	"tamamonomae": Shikigami{
+	"tamamonomae": {
 		HP:      12532,
 		Atk:     3350,
 		Crit:    12,
 		CritDmg: 160,
 		Spd:     110,
 	},
-	"nekomata": Shikigami{
+	"nekomata": {
 		Atk:      3002,
 		Crit:     10,
 		CritDmg:  150,
 		Spd:      118,
 		Multihit: true,
 	},
-	"kisei": Shikigami{
+	"kisei": {
 		HP:       9912,
 		Atk:      3002,
 		Crit:     8,
@@ -79,21 +79,21 @@ var shikigamis = map[string]Shikigami{
 		Spd:      106,
 		Multihit: true,
 	},
-	"shiranui": Shikigami{
+	"shiranui": {
 		HP:      9229,
 		Atk:     3457,
 		Crit:    10,
 		CritDmg: 150,
 		Spd:     117,
 	},
-	"sp ibaraki doji": Shikigami{
+	"sp ibaraki doji": {
 		HP:      10254,
 		Atk:     3323,
 		Crit:    15,
 		CritDmg: 150,
 		Spd:     112,
 	},
-	"ryomen": Shikigami{
+	"ryomen": {
 		HP:       10482,
 		Atk:      3136,
 		Crit:     10,
@@ -101,14 +101,14 @@ var shikigamis = map[string]Shikigami{
 		Spd:      109,
 		Multihit: true,
 	},
-	"bukkuman": Shikigami{
+	"bukkuman": {
 		HP:      11393,
 		Atk:     2680,
 		Crit:    8,
 		CritDmg: 150,
 		Spd:     109,
 	},
-	"ootengu": Shikigami{
+	"ootengu": {
 		HP:       10026,
 		Atk:      3136,
 		Crit:     10,
@@ -116,7 +116,7 @@ var shikigamis = map[string]Shikigami{
 		Spd:      110,
 		Multihit: true,
 	},
-	"kuro": Shikigami{
+	"kuro": {
 		HP:       9912,
 		Atk:      3377,
 		Crit:     9,
@@ -124,14 +124,14 @@ var shikigamis = map[string]Shikigami{
 		Spd:      109,
 		Multihit: true,
 	},
-	"orochi": Shikigami{
+	"orochi": {
 		HP:      12418,
 		Atk:     4074,
 		Crit:    10,
 		CritDmg: 150,
 		Spd:     118,
 	},
-	"inuyasha": Shikigami{
+	"inuyasha": {
 		HP:       11393,
 		Atk:      2975,
 		Crit:     10,
@@ -139,14 +139,14 @@ var shikigamis = map[string]Shikigami{
 		Spd:      114,
 		Multihit: true,
 	},
-	"sp crimson yoto": Shikigami{
+	"sp crimson yoto": {
 		HP:      9912,
 		Atk:     3377,
 		Crit:    12,
 		CritDmg: 150,
 		Spd:     111,
 	},
-	"sp blazing tamamanomae": Shikigami{
+	"sp blazing tamamanomae": {
 		HP:       12532,
 		Atk:      3511,
 		Crit:     12,
@@ -154,7 +154,7 @@ var shikigamis = map[string]Shikigami{
 		Spd:      115,
 		Multihit: true,
 	},
-	"sp shuten doji": Shikigami{
+	"sp shuten doji": {
 		HP:      11963,
 		Atk:     3189,
 		Crit:    10,
