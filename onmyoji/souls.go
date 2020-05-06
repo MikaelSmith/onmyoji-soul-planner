@@ -18,6 +18,74 @@ const (
 	Heal             = "Heal"
 )
 
+// A comparison function that returns +1 if s1 is strictly better than s2,
+// -1 if s1 is not better in any way than s2, and 0 otherwise.
+// Only compares those with the same Spd because constraints may require odd combinations of spd.
+func (o Optimizer) comp(s1, s2 Soul) int {
+	if s1.Spd != s2.Spd {
+		return 0
+	}
+
+	switch o {
+	case Damage:
+		if s1.Crit > s2.Crit && s1.CritDmg > s2.CritDmg && s1.Atk > s2.Atk && s1.AtkBonus > s2.AtkBonus {
+			return 1
+		} else if s1.Crit <= s2.Crit && s1.CritDmg <= s2.CritDmg && s1.Atk <= s2.Atk && s1.AtkBonus <= s2.AtkBonus {
+			return -1
+		}
+		return 0
+	case HP:
+		if s1.HP > s2.HP && s1.HPBonus > s2.HPBonus {
+			return 1
+		} else if s1.HP <= s2.HP && s1.HPBonus <= s2.HPBonus {
+			return -1
+		}
+		return 0
+	case Heal:
+		if s1.HP > s2.HP && s1.HPBonus > s2.HPBonus && s1.Crit > s2.Crit && s1.CritDmg > s2.CritDmg {
+			return 1
+		} else if s1.HP <= s2.HP && s1.HPBonus <= s2.HPBonus && s1.Crit <= s2.Crit && s1.CritDmg <= s2.CritDmg {
+			return -1
+		}
+		return 0
+	}
+	panic("unknown optimizer")
+}
+
+// Remove all souls that are strictly worse than another soul of the same type.
+func (o Optimizer) bestOf(souls []Soul) []Soul {
+	soulsByType := make(map[string][]Soul)
+	for _, soul := range souls {
+		soulsOfType, ok := soulsByType[soul.Type]
+		if !ok {
+			soulsByType[soul.Type] = []Soul{soul}
+			continue
+		}
+
+		eliminated := false
+		for i, alt := range soulsOfType {
+			// if soul is strictly better, replace alt; if soul is not better in any way, skip soul; else add soul
+			if comp := o.comp(soul, alt); comp > 0 {
+				soulsOfType[i] = soul
+				eliminated = true
+				break
+			} else if comp < 0 {
+				eliminated = true
+				break
+			}
+		}
+		if !eliminated {
+			soulsByType[soul.Type] = append(soulsOfType, soul)
+		}
+	}
+
+	result := make([]Soul, 0)
+	for _, soulsOfType := range soulsByType {
+		result = append(result, soulsOfType...)
+	}
+	return result
+}
+
 // soulTypes map the name of souls to their 2-soul attribute bonus.
 var soulTypes = map[string]string{
 	"harpy":              "atk bonus",
@@ -118,6 +186,9 @@ func contains(names []string, name string) bool {
 func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn func(SoulSet) Result) Result {
 	candidates := make(chan Result)
 
+	slot1, slot2, slot3 := opt.bestOf(db.Slot1), opt.bestOf(db.Slot2), opt.bestOf(db.Slot3)
+	slot4, slot5, slot6 := opt.bestOf(db.Slot4), opt.bestOf(db.Slot5), opt.bestOf(db.Slot6)
+
 	type setcompletion = int
 	const (
 		partial setcompletion = iota
@@ -160,7 +231,7 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 	secs := immutable.NewMap(nil)
 
 	numCandidates := 0
-	for _, sl1 := range db.Slot1 {
+	for _, sl1 := range slot1 {
 		primName, primCount, secs := match(sl1.Type, primName, primCount, secs)
 		if secs == nil {
 			continue
@@ -169,13 +240,13 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 
 		go func(sl1 Soul) {
 			var best Result
-			for _, sl2 := range db.Slot2 {
+			for _, sl2 := range slot2 {
 				primName, primCount, secs := match(sl2.Type, primName, primCount, secs)
 				if secs == nil {
 					continue
 				}
 
-				for _, sl3 := range db.Slot3 {
+				for _, sl3 := range slot3 {
 					primName, primCount, secs := match(sl3.Type, primName, primCount, secs)
 					if secs == nil {
 						continue
@@ -186,7 +257,7 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 						continue
 					}
 
-					for _, sl4 := range db.Slot4 {
+					for _, sl4 := range slot4 {
 						primName, primCount, secs := match(sl4.Type, primName, primCount, secs)
 						if secs == nil {
 							continue
@@ -195,7 +266,7 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 							continue
 						}
 
-						for _, sl5 := range db.Slot5 {
+						for _, sl5 := range slot5 {
 							primName, primCount, secs := match(sl5.Type, primName, primCount, secs)
 							if secs == nil {
 								continue
@@ -212,7 +283,7 @@ func (db *SoulDb) BestSet(primaries, secondaries []string, opt Optimizer, fn fun
 								continue
 							}
 
-							for _, sl6 := range db.Slot6 {
+							for _, sl6 := range slot6 {
 								_, primCount, secs := match(sl6.Type, primName, primCount, secs)
 								if secs == nil {
 									continue
