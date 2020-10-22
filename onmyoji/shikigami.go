@@ -192,6 +192,13 @@ var shikigamis = map[string]Shikigami{
 		Spd:      120,
 		Multihit: true,
 	},
+	"kanihime": {
+		HP:      11051,
+		Atk:     3243,
+		Crit:    8,
+		CritDmg: 150,
+		Spd:     108,
+	},
 }
 
 var nicknames = map[string]string{
