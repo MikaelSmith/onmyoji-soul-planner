@@ -200,11 +200,19 @@ var shikigamis = map[string]Shikigami{
 		Spd:     108,
 	},
 	"kinnara": {
-		HP:      10709,
-		Atk:     3109,
-		Crit:    15,
-		CritDmg: 160,
-		Spd:     115,
+		HP:       10709,
+		Atk:      3109,
+		Crit:     15,
+		CritDmg:  160,
+		Spd:      115,
+		Multihit: true,
+	},
+	"senhime": {
+		HP:      12532,
+		Atk:     2948,
+		Crit:    8,
+		CritDmg: 121,
+		Spd:     121,
 	},
 }
 
