@@ -108,6 +108,7 @@ var soulTypes = map[string]string{
 	"boroboroton":        "hp bonus",
 	"jizo statue":        "hp bonus",
 	"holy flame":         "hp bonus",
+	"nuribotoke":         "hp bonus",
 	"fortune cat":        "def bonus",
 	"azure basan":        "effect hit",
 	"namazu":             "",
