@@ -214,6 +214,13 @@ var shikigamis = map[string]Shikigami{
 		CritDmg: 121,
 		Spd:     121,
 	},
+	"sp otakemaru": {
+		HP:      11393,
+		Atk:     3350,
+		Crit:    10,
+		CritDmg: 150,
+		Spd:     115,
+	},
 }
 
 var nicknames = map[string]string{
@@ -230,6 +237,7 @@ var nicknames = map[string]string{
 	"sp tama":        "sp blazing tamamanomae",
 	"sp tamamo":      "sp blazing tamamanomae",
 	"sp tamamonomae": "sp blazing tamamanomae",
+	"sp otake":       "sp otakemaru",
 	"ushi":           "ushi no toki",
 	"suzuka":         "suzuka gozen",
 	"taki":           "takiyashahime",
