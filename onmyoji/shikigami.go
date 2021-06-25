@@ -221,6 +221,13 @@ var shikigamis = map[string]Shikigami{
 		CritDmg: 150,
 		Spd:     115,
 	},
+	"asura": {
+		HP:      11279,
+		Atk:     4127,
+		Crit:    10,
+		CritDmg: 150,
+		Spd:     119,
+	},
 }
 
 var nicknames = map[string]string{
